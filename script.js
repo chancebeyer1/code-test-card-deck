@@ -177,5 +177,53 @@ class CardDeck {
 // Create a new card deck.
 const deck = new CardDeck(".deck", ".hand");
 
-// Take a look at the deck object and its methods.
-console.log(deck);
+// Grab the URL parameters
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const entries = urlParams.entries();
+
+// Variable to insure there is at least one correct parameter
+let includesParam = false
+
+// Loop through the URL Parameters
+for(const entry of entries) {
+	let splitValues = []
+
+	switch (entry[0].toLowerCase()) {
+		case "cards":
+			includesParam = true
+			splitValues = entry[1].split(" ")
+			deck.filter("id", splitValues)
+			break;
+
+		case "suits":
+			includesParam = true
+			splitValues = entry[1].split(" ")
+			deck.filter("suit", splitValues)
+			break;
+
+		case "ranks":
+			includesParam = true
+			splitValues = entry[1].split(" ")
+			deck.filter("rank", splitValues.map(Number))
+			break;
+				
+	}
+}
+
+// Lastly if there is a limit param, limit after all the other filters have applied
+const limit = urlParams.get('limit')
+if (limit != null) {
+	includesParam = true
+	deck.limit(limit)
+}
+
+if (includesParam) {
+	// Sort and draw the filtered cards
+	deck.sort()
+	deck.drawFiltered()
+}
+
+
+
+
